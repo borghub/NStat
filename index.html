@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" >
+   <head>
+       <title>Host Status</title>
+       <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+       <link rel="stylesheet" media="screen" type="text/css" title="Design" href="css/stylesheet.css" />
+	   <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script> 
+   </head>
+<script>
+var myList = "nodes.json";
+
+// Builds the HTML Table out of myList.
+function buildHtmlTable() {
+    var columns = addAllColumnHeaders(myList);
+
+    for (var i = 0 ; i < myList.length ; i++) {
+        var row$ = $('<tr/>');
+        for (var colIndex = 0 ; colIndex < columns.length ; colIndex++) {
+            var cellValue = myList[i][columns[colIndex]];
+
+            if (cellValue == null) { cellValue = ""; }
+
+            row$.append($('<td/>').html(cellValue));
+        }
+        $("#excelDataTable").append(row$);
+    }
+}
+
+// Adds a header row to the table and returns the set of columns.
+// Need to do union of keys from all records as some records may not contain
+// all records
+function addAllColumnHeaders(myList)
+{
+    var columnSet = [];
+    var headerTr$ = $('<tr/>');
+
+    for (var i = 0 ; i < myList.length ; i++) {
+        var rowHash = myList[i];
+        for (var key in rowHash) {
+            if ($.inArray(key, columnSet) == -1){
+                columnSet.push(key);
+                headerTr$.append($('<th/>').html(key));
+            }
+        }
+    }
+    $("#excelDataTable").append(headerTr$);
+
+    return columnSet;
+}
+</script>
+<body onLoad="buildHtmlTable()">
+<table id="excelDataTable" border="1">
+  </table>
+</body>
+</html>
