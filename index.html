@@ -47,14 +47,15 @@
     </script>
     <script>
         (function() {
-            var template = $("#template").html();
-            $.get('nodes.json', function(data) {
-                console.log(data)
-                
-                var rendered = Mustache.to_html(template, {nodes:data});
-                console.log(rendered);
-                $("#container-nodes").html(rendered);
-            });
+            var getData = function() {
+                var template = $("#template").html();
+                $.get('nodes.json', function(data) {
+                    var rendered = Mustache.to_html(template, {nodes:data});
+                    $("#container-nodes").html(rendered);
+                });
+            };
+            setInterval(getData, 30000);
+            getData();
         }());
     </script>
     
