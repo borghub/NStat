@@ -1,55 +1,62 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" >
-   <head>
-       <title>Host Status</title>
-       <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-       <link rel="stylesheet" media="screen" type="text/css" title="Design" href="css/stylesheet.css" />
-	   <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script> 
-   </head>
-<script>
-var myList = "nodes.json";
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Stats</title>
+    <link rel="stylesheet" href="assets/main.css" />
+    <link rel="stylesheet" href="assets/semantic/css/semantic.css" />
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,800' rel='stylesheet' type='text/css'>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script> 
+    <script src="//cdnjs.cloudflare.com/ajax/libs/mustache.js/0.8.1/mustache.js"></script>
+    <script src="assets/semantic/javascript/semantic.js"></script> 
+</head>
+<body>
+    <div class="ui inverted menu main fixed transparent">
+        <div class="title item">
+            <b>NStats</b>
+        </div>
+    </div>
 
-// Builds the HTML Table out of myList.
-function buildHtmlTable() {
-    var columns = addAllColumnHeaders(myList);
-
-    for (var i = 0 ; i < myList.length ; i++) {
-        var row$ = $('<tr/>');
-        for (var colIndex = 0 ; colIndex < columns.length ; colIndex++) {
-            var cellValue = myList[i][columns[colIndex]];
-
-            if (cellValue == null) { cellValue = ""; }
-
-            row$.append($('<td/>').html(cellValue));
-        }
-        $("#excelDataTable").append(row$);
-    }
-}
-
-// Adds a header row to the table and returns the set of columns.
-// Need to do union of keys from all records as some records may not contain
-// all records
-function addAllColumnHeaders(myList)
-{
-    var columnSet = [];
-    var headerTr$ = $('<tr/>');
-
-    for (var i = 0 ; i < myList.length ; i++) {
-        var rowHash = myList[i];
-        for (var key in rowHash) {
-            if ($.inArray(key, columnSet) == -1){
-                columnSet.push(key);
-                headerTr$.append($('<th/>').html(key));
-            }
-        }
-    }
-    $("#excelDataTable").append(headerTr$);
-
-    return columnSet;
-}
-</script>
-<body onLoad="buildHtmlTable()">
-<table id="excelDataTable" border="1">
-  </table>
+    <div id="main-content">
+        <div class="ui items" id="container-nodes">
+        </div
+    </div>   
+    
+    <script id="template" type="x-tmpl-mustache">
+        <table class="ui table segment">
+            <thead>
+                <tr>
+                    <th>Node</th>
+                    <th>Temperature</th>
+                    <th>CPU</th>
+                    <th>Cores</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+            {{#nodes}}
+                <tr>
+                    <td>{{ Node }}</td>
+                    <td>{{ Temperature }}</td>
+                    <td>{{ CPU }} %</td>
+                    <td>{{ Cores }}</td>
+                    <td>{{ Date }}</td>
+                </tr>
+            {{/nodes}}
+            </tbody>
+        </table>
+    </script>
+    <script>
+        (function() {
+            var template = $("#template").html();
+            $.get('nodes.json', function(data) {
+                console.log(data)
+                
+                var rendered = Mustache.to_html(template, {nodes:data});
+                console.log(rendered);
+                $("#container-nodes").html(rendered);
+            });
+        }());
+    </script>
+    
 </body>
 </html>
